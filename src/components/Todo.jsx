@@ -26,6 +26,16 @@ function Todo() {
       return prevToDo.filter((ToDo) => ToDo.id !== id);
     });
   };
+
+  const toggleComplete = (id) => {
+    setToDoList((prevToDo) => {
+      return prevToDo.map((ToDo) => {
+        return ToDo.id === id
+          ? { ...ToDo, isComplete: !ToDo.isComplete }
+          : ToDo;
+      });
+    });
+  };
   return (
     <div className="bg-white md:w-2/5 lg:w- h-5/6 place-self-center rounded-2xl p-4 overflow-hidden">
       {/* Heading */}
@@ -56,7 +66,7 @@ function Todo() {
       </div>
 
       {/* List To Do */}
-      <div className="overflow-y-auto h-1/2 my-4">
+      <div className="overflow-y-auto md:h-[70%] sm:h-[65%] my-4">
         {ToDoList.map((item, index) => {
           return (
             <TodoItems
@@ -64,7 +74,8 @@ function Todo() {
               doing={item.ToDo}
               id={item.id}
               isComplete={item.isComplete}
-              deteleToDo={deleteToDo}
+              deleteToDo={deleteToDo}
+              toggleComplete={toggleComplete}
             />
           );
         })}

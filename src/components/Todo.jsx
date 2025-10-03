@@ -4,21 +4,22 @@ import TodoItems from "./TodoItems";
 
 function Todo() {
   const [ToDoList, setToDoList] = useState([]);
-  const inputRef = useRef();
+  const [text, setText] = useState("");
+  const [Date, setDate] = useState("");
 
-  const addToDo = () => {
-    const inputToDo = inputRef.current.value.trim();
-    if (inputToDo === "") {
+  const addToDo = (doing, dueDate) => {
+    if (!doing.trim() || !dueDate) {
       return null;
     }
 
     const newToDo = {
-      id: Date.now(),
-      ToDo: inputToDo,
+      id: crypto.randomUUID(),
+      doing,
       isComplete: false,
+      dueDate,
     };
 
-    setToDoList((prev) => [...prev, newToDo]);
+    setToDoList((prevToDo) => [...prevToDo, newToDo]);
   };
 
   const deleteToDo = (id) => {
@@ -36,6 +37,14 @@ function Todo() {
       });
     });
   };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    addToDo(text, Date);
+    setText("");
+    setDate("");
+  };
+
   return (
     <div className="bg-white md:w-2/5 lg:w- h-5/6 place-self-center rounded-2xl p-4 overflow-hidden">
       {/* Heading */}
@@ -49,29 +58,38 @@ function Todo() {
         <ReportBox Name="Overdue" Sum="32A" />
       </div>
 
-      {/* Input */}
-      <div className="bg-slate-100 flex items-center rounded-md">
-        <input
-          ref={inputRef}
-          className="rounded-md w-full py-3 px-2"
-          placeholder="To Do"
-          type="text"
-        />
+      <form onSubmit={onSubmit}>
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            type="text"
+            className="bg-slate-100 py-3 px-2 rounded-md"
+            placeholder="Doing Something"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <input
+            type="date"
+            className="bg-slate-100 py-3 px-2 rounded-md"
+            value={Date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
         <button
-          onClick={addToDo}
-          className="bg-gray-900 text-white px-4 py-3 rounded-tr-md rounded-br-md cursor-pointer"
+          type="submit"
+          className="col-span-2 bg-gray-900 text-white py-3 px-2 w-full my-2 rounded-md"
         >
-          Add
+          Add +
         </button>
-      </div>
+      </form>
 
       {/* List To Do */}
-      <div className="overflow-y-auto md:h-[70%] sm:h-[65%] my-4">
+      <div className="overflow-y-auto sm:h-3/6 md:h-3/5 my-4">
         {ToDoList.map((item, index) => {
           return (
             <TodoItems
               key={index}
-              doing={item.ToDo}
+              doing={item.doing}
+              date={item.dueDate}
               id={item.id}
               isComplete={item.isComplete}
               deleteToDo={deleteToDo}

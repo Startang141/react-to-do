@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ReportBox from "./ReportBox";
 import TodoItems from "./TodoItems";
 import EditModal from "./editModal";
+import ReadModal from "./readModal";
 
 function Todo() {
   const [ToDoList, setToDoList] = useState([]);
@@ -9,6 +10,7 @@ function Todo() {
   const [text, setText] = useState("");
   const [Date, setDate] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
 
   const addToDo = (doing, dueDate) => {
     if (!doing.trim() || !dueDate) {
@@ -43,6 +45,7 @@ function Todo() {
 
   const closeModal = () => {
     setModalVisible(false);
+    setDetailModalVisible(false);
   };
 
   const handleEdit = (item) => {
@@ -50,6 +53,13 @@ function Todo() {
     setText(item.doing);
     setDate(item.dueDate);
     setModalVisible(true);
+  };
+
+  const handleDetail = (item) => {
+    setEditToDo(item);
+    setText(item.doing);
+    setDate(item.dueDate);
+    setDetailModalVisible(true);
   };
 
   const handleSave = () => {
@@ -123,7 +133,8 @@ function Todo() {
               isComplete={item.isComplete}
               deleteToDo={deleteToDo}
               toggleComplete={toggleComplete}
-              handleEdit={() => handleEdit(item)} // Edit when clicked
+              handleEdit={() => handleEdit(item)}
+              handleDetail={() => handleDetail(item)}
             />
           ))
         ) : (
@@ -141,6 +152,12 @@ function Todo() {
           dueDate={Date}
           setText={setText}
           setDueDate={setDate}
+        />
+        <ReadModal
+          text={text}
+          Date={Date}
+          modalVisible={detailModalVisible}
+          closeModal={closeModal}
         />
       </div>
     </div>

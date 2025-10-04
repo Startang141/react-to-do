@@ -1,4 +1,4 @@
-import { Pencil, Square, SquareCheck, Trash2 } from "lucide-react";
+import { Eye, Pencil, Square, SquareCheck, Trash2 } from "lucide-react";
 import React from "react";
 
 function TodoItems({
@@ -9,6 +9,7 @@ function TodoItems({
   toggleComplete,
   date,
   handleEdit,
+  handleDetail,
 }) {
   return (
     <div className="flex items-center justify-between my-4 border rounded-md py-4 px-2 hover:bg-slate-50 overflow-hidden">
@@ -33,6 +34,9 @@ function TodoItems({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <button onClick={handleDetail}>
+          <Eye />
+        </button>
         <button onClick={handleEdit}>
           <Pencil />
         </button>

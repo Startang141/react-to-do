@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReportBox from "./ReportBox";
 import TodoItems from "./TodoItems";
 import EditModal from "./editModal";
@@ -8,7 +8,7 @@ function Todo() {
   const [ToDoList, setToDoList] = useState([]);
   const [editToDo, setEditToDo] = useState(null);
   const [text, setText] = useState("");
-  const [Date, setDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
 
@@ -51,14 +51,14 @@ function Todo() {
   const handleEdit = (item) => {
     setEditToDo(item);
     setText(item.doing);
-    setDate(item.dueDate);
+    setDueDate(item.dueDate);
     setModalVisible(true);
   };
 
   const handleDetail = (item) => {
     setEditToDo(item);
     setText(item.doing);
-    setDate(item.dueDate);
+    setDueDate(item.dueDate);
     setDetailModalVisible(true);
   };
 
@@ -66,7 +66,7 @@ function Todo() {
     setToDoList((prev) => {
       return prev.map((ToDo) => {
         return ToDo.id === editToDo.id
-          ? { ...ToDo, doing: text, dueDate: Date }
+          ? { ...ToDo, doing: text, dueDate: dueDate }
           : ToDo;
       });
     });
@@ -74,14 +74,29 @@ function Todo() {
     setModalVisible(false);
     setEditToDo(null);
     setText("");
-    setDate("");
+    setDueDate("");
   };
+
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  const { scheduleCount, todayCount, overdueCount } = useMemo(() => {
+    const today = ToDoList.filter((todo) => todo.dueDate === todayStr).length;
+    const overdue = ToDoList.filter(
+      (t) => t.dueDate < todayStr && !t.isComplete
+    ).length;
+    const schedule = ToDoList.filter((t) => t.dueDate > todayStr).length;
+    return {
+      scheduleCount: schedule,
+      todayCount: today,
+      overdueCount: overdue,
+    };
+  }, [ToDoList, todayStr]);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    addToDo(text, Date);
+    addToDo(text, dueDate);
     setText("");
-    setDate("");
+    setDueDate("");
   };
 
   return (
@@ -91,10 +106,10 @@ function Todo() {
       <p className="text-sm text-gray-600">List Now, Doing One Day</p>
 
       {/* Mini Report */}
-      <div className="grid grid-flow-col grid-cols-3 my-4 gap-2">
-        <ReportBox Name="Schedule" Sum="12" />
-        <ReportBox Name="Today" Sum="1A" />
-        <ReportBox Name="Overdue" Sum="32A" />
+      <div className="grid grid-cols-3 my-4 gap-2">
+        <ReportBox Name="Schedule" Sum={scheduleCount} />
+        <ReportBox Name="Today" Sum={todayCount} />
+        <ReportBox Name="Overdue" Sum={overdueCount} />
       </div>
 
       <form onSubmit={onSubmit}>
@@ -109,8 +124,8 @@ function Todo() {
           <input
             type="date"
             className="bg-slate-100 py-3 px-2 rounded-md"
-            value={Date}
-            onChange={(e) => setDate(e.target.value)}
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
           />
         </div>
         <button
@@ -149,13 +164,13 @@ function Todo() {
           closeModal={closeModal}
           handleSave={handleSave}
           text={text}
-          dueDate={Date}
+          dueDate={dueDate}
           setText={setText}
-          setDueDate={setDate}
+          setDueDate={setDueDate}
         />
         <ReadModal
           text={text}
-          Date={Date}
+          Date={dueDate}
           modalVisible={detailModalVisible}
           closeModal={closeModal}
         />

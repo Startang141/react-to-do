@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReportBox from "./ReportBox";
 import TodoItems from "./TodoItems";
 import EditModal from "./editModal";
@@ -11,6 +11,19 @@ function Todo() {
   const [dueDate, setDueDate] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+
+  useEffect(() => {
+    const storedLocal = JSON.parse(localStorage.getItem("ToDoList"));
+    if (storedLocal) {
+      setToDoList(storedLocal);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (ToDoList.length > 0) {
+      localStorage.setItem("ToDoList", JSON.stringify(ToDoList));
+    }
+  }, [ToDoList]);
 
   const addToDo = (doing, dueDate) => {
     if (!doing.trim() || !dueDate) {
@@ -28,9 +41,9 @@ function Todo() {
   };
 
   const deleteToDo = (id) => {
-    setToDoList((prevToDo) => {
-      return prevToDo.filter((ToDo) => ToDo.id !== id);
-    });
+    const updatedToDoList = ToDoList.filter((ToDo) => ToDo.id !== id);
+    setToDoList(updatedToDoList);
+    localStorage.setItem("ToDoList", JSON.stringify(updatedToDoList));
   };
 
   const toggleComplete = (id) => {
@@ -70,6 +83,11 @@ function Todo() {
           : ToDo;
       });
     });
+
+    localStorage.setItem(
+      "ToDoList",
+      JSON.stringify(ToDoList.map((ToDo) => ToDo))
+    );
 
     setModalVisible(false);
     setEditToDo(null);

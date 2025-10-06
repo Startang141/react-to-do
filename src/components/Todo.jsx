@@ -84,11 +84,6 @@ function Todo() {
       });
     });
 
-    localStorage.setItem(
-      "ToDoList",
-      JSON.stringify(ToDoList.map((ToDo) => ToDo))
-    );
-
     setModalVisible(false);
     setEditToDo(null);
     setText("");
